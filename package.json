@@ -4,8 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "build:main": "vite build",
+    "build:content": "vite build --config vite.config.content.js",
+    "build:background": "vite build --config vite.config.background.js",
+    "build": "tsc -b && npm run build:main && npm run build:content && npm run build:background && npm run postbuild",
+    "postbuild": "cp manifest.json dist/manifest.json && cp public/vite.svg dist/vite.svg",
     "dev": "vite",
-    "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

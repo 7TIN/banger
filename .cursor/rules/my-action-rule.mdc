@@ -1,0 +1,21 @@
+---
+description: When prompted with "want," "build," "make," "create," "error," "fix," "debug," etc., always produce actionable code edits, plus concise per-file/context commentary.
+alwaysApply: true
+---
+
+# Actionable Changes for Build & Error Prompts
+
+Whenever the user prompt contains any of these action or error-related terms—**want, build, make, create, implement, add, design, generate, error, bug, fix, debug, failure, crash, exception, unexpected**—follow this workflow:
+
+- **Action-focused:** Generate direct code edits or snippets as the primary output, not just theory.
+- **For errors/bugs:** 
+    - Propose and apply concrete code fixes for the identified error, bug, or exception.
+    - If info is missing, concisely clarify, then proceed to code edits.
+- **Debugging:** 
+    - If log output or error traces are provided, use them to make targeted code edits and explain (briefly) what was changed and why[2][3][5].
+- **Contextual mini-theory:** 
+    - For each affected file or major change, add a *short* summary (1–2 lines) of what changed and why—especially for error fixes or critical adjustments.
+    - Optionally, add stepwise guidance at boundaries (e.g., "Added error handling to config loader").
+- **Brevity:** Avoid lengthy theoretical explanations unless asked; prioritize actionable steps and concise summaries.
+
+**Example Output:**

@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 body {
-  border-radius: 12px;
-  overflow: hidden;
+  /* Remove border-radius and overflow to avoid interfering with the page */
+}
+
+.banger-sidebar {
+  color: #222;
+  background: #fff;
+  font-family: inherit;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
