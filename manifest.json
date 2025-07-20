@@ -19,5 +19,9 @@
       "matches": ["https://twitter.com/*"],
       "js": ["content/injectTwitterEditor.js"]
     }
-  ]
+  ],
+  "chrome_url_overrides": {
+  "newtab": "index.html"
+}
+
 }

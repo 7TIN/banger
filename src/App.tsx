@@ -5,6 +5,7 @@ import ImageUploader from "./components/ImageUploader";
 import ImageCropper from "./components/ImageCropper";
 import CroppedResult from "./components/CroppedResult";
 import Cropper from "cropperjs";
+import AddToTwitterButton from "./components/AddToTwitterButton";
 
 export default function App() {
   const [image, setImage] = useState<string>("");
@@ -12,10 +13,21 @@ export default function App() {
   const cropperRef = useRef<Cropper | null>(null);
 
   return (
-    <div className="w-[600px] h-[500px] p-4 flex flex-col items-center overflow-auto bg-white text-center space-y-4">
-      <h2 className="text-lg font-semibold">Image Cropper</h2>
+    <div className="fixed top-0 right-0 z-50 rounded-l-xl w-[600px] h-screen overflow-y-auto p-4 bg-white shadow-xl flex flex-col">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="Logo" className="h-6 w-6" />
+          <h2 className="text-base font-semibold text-gray-800">Crop to Tweet</h2>
+        </div>
+        <button className="absolute top-2 right-2 text-gray-500 hover:text-red-500" onClick={() => window.close()}>×</button>
+      </div>
 
-      <ImageUploader onImageChange={setImage} />
+      <div className="flex-grow overflow-auto space-y-4 px-1 scrollbar-hide">
+        <ImageUploader onImageChange={(img) => {
+        setImage(img);
+        setCroppedImage("");
+      }} />
 
       {image && (
         <ImageCropper
@@ -26,47 +38,12 @@ export default function App() {
       )}
 
       {croppedImage && <CroppedResult croppedImage={croppedImage} />}
+      </div>
 
-      <button
-        onClick={() => {
-          if (croppedImage) {
-            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-              const tabId = tabs[0].id;
-              if (tabId && croppedImage) {
-                chrome.scripting.executeScript({
-                  target: { tabId },
-                  func: (imageDataUrl: string) => {
-                    const input = document.querySelector(
-                      'input[type="file"]'
-                    ) as HTMLInputElement;
-                    if (!input) {
-                      alert("Twitter upload input not found.");
-                      return;
-                    }
-                    fetch(imageDataUrl)
-                      .then((res) => res.blob())
-                      .then((blob) => {
-                        const file = new File([blob], "cropped.png", {
-                          type: blob.type,
-                        });
-                        const dt = new DataTransfer();
-                        dt.items.add(file);
-                        input.files = dt.files;
-                        input.dispatchEvent(
-                          new Event("change", { bubbles: true })
-                        );
-                      });
-                  },
-                  args: [croppedImage],
-                });
-              }
-            });
-          }
-        }}
-        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-      >
-        Add to Twitter Post
-      </button>
+      {/* Footer */}
+      <div className="mt-4 pt-3 flex justify-between items-center text-xs text-gray-500">
+        {croppedImage && <AddToTwitterButton croppedImage={croppedImage} />}
+      </div>
     </div>
   );
 }
