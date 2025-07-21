@@ -1,30 +1,31 @@
 import React from 'react';
 
-interface ImageUploaderProps {
-  onImageSelect: (image: string) => void;
+interface Props {
+  onImageSelect: (base64: string) => void;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageSelect }) => {
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        onImageSelect(result);
-      };
-      reader.readAsDataURL(file);
-    }
+const ImageUploader: React.FC<Props> = ({ onImageSelect }) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        onImageSelect(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
-    <div className="flex flex-col items-center gap-4 p-4">
-      <input
+    <div className="w-full flex flex-col items-center gap-2">
+      <label className="text-sm text-gray-600 font-medium">Upload an image to crop</label>
+      <input title='input'
         type="file"
         accept="image/*"
-        onChange={handleFileChange}
-        className="w-full p-2 border rounded"
-        title="Select an image to crop"
+        onChange={handleChange}
+        className="block w-full text-sm file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-full file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
       />
     </div>
   );

@@ -10,12 +10,12 @@ html, body, #root {
 }
 
 /* Custom scrollbar */
-/* .overflow-y-auto {
+.overflow-y-auto {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e0 #f7fafc;
-} */
+}
 
-/* .overflow-y-auto::-webkit-scrollbar {
+.overflow-y-auto::-webkit-scrollbar {
   width: 6px;
 }
 
@@ -26,10 +26,10 @@ html, body, #root {
 .overflow-y-auto::-webkit-scrollbar-thumb {
   background-color: #cbd5e0;
   border-radius: 3px;
-} */
+}
 
 /* Ensure cropper works in popup */
-/* .cropper-container {
+.cropper-container {
   max-width: 100%;
   max-height: 450px;
-} */
+}

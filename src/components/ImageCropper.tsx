@@ -1,114 +1,109 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import CroppedResult from './CroppedResult';
 
-interface ImageCropperProps {
+interface Props {
   image: string;
-  onCropComplete: (croppedImage: string) => void;
+  croppedImage: string | null;
+  onCropComplete: (data: string) => void;
+  onReset: () => void;
+  maxWidth: number;
+  maxHeight: number;
+  minWidth: number;
+  minHeight: number;
+  croppedDims: { width: number; height: number };
 }
 
-const MAX_WIDTH = 550;
-const MAX_HEIGHT = 550;
-
-const ImageCropper: React.FC<ImageCropperProps> = ({ image, onCropComplete }) => {
-  const imageRef = useRef<HTMLImageElement>(null);
+const ImageCropper: React.FC<Props> = ({
+  image,
+  croppedImage,
+  onCropComplete,
+  onReset,
+  maxWidth,
+  maxHeight,
+  minWidth,
+  minHeight,
+  croppedDims
+}) => {
+  const imgRef = useRef<HTMLImageElement>(null);
   const cropperRef = useRef<Cropper | null>(null);
-  const [imgDims, setImgDims] = useState<{width: number, height: number}>({width: MAX_WIDTH, height: MAX_HEIGHT});
 
+  // Initialize cropper on image load
   useEffect(() => {
-    // Get natural image size to adjust container
-    const img = new window.Image();
-    img.onload = () => {
-      let width = img.naturalWidth;
-      let height = img.naturalHeight;
-      // Scale down if too big
-      const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1);
-      setImgDims({
-        width: Math.round(width * scale),
-        height: Math.round(height * scale)
-      });
-    };
-    img.src = image;
-  }, [image]);
-
-  useEffect(() => {
-    if (imageRef.current) {
-      cropperRef.current = new Cropper(imageRef.current, {
+    if (imgRef.current) {
+      cropperRef.current = new Cropper(imgRef.current, {
         viewMode: 1,
         background: false,
         autoCropArea: 1,
         zoomable: true,
         responsive: true,
-        checkOrientation: false,
         dragMode: 'move',
         cropBoxMovable: true,
         cropBoxResizable: true,
-        scalable: true,
-        aspectRatio: NaN,
-        restore: true,
-        guides: true,
-        highlight: true,
-        toggleDragModeOnDblclick: true,
-        minContainerWidth: 100,
-        minContainerHeight: 100,
       });
     }
+
     return () => {
-      if (cropperRef.current) {
-        cropperRef.current.destroy();
-      }
+      cropperRef.current?.destroy();
     };
-  }, [image, imgDims]);
+  }, [image]);
 
   const handleCrop = () => {
     if (cropperRef.current) {
-      const croppedCanvas = cropperRef.current.getCroppedCanvas();
-      const croppedImage = croppedCanvas.toDataURL('image/jpeg');
-      onCropComplete(croppedImage);
+      const canvas = cropperRef.current.getCroppedCanvas();
+      const cropped = canvas.toDataURL('image/jpeg');
+      onCropComplete(cropped);
     }
   };
 
   const handleReset = () => {
-    if (cropperRef.current) {
-      cropperRef.current.reset();
-      cropperRef.current.zoomTo(0);
-    }
+    cropperRef.current?.reset();
+    cropperRef.current?.zoomTo(0);
+    onReset();
   };
 
   return (
-    <div className="w-full flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 w-full">
+      {/* Original Image */}
       <div
-        className="overflow-hidden rounded shadow border bg-gray-100 flex items-center justify-center mx-auto"
+        className="overflow-hidden rounded shadow border bg-gray-100 flex items-center justify-center"
         style={{
-          maxWidth: MAX_WIDTH,
-          maxHeight: MAX_HEIGHT,
-          width: imgDims.width,
-          height: imgDims.height,
-          display: 'inline-block',
+          maxWidth,
+          maxHeight,
+          minWidth,
+          minHeight,
         }}
       >
         <img
-          ref={imageRef}
+          ref={imgRef}
           src={image}
-          alt="Original"
-          className="max-w-full max-h-full object-contain"
-          style={{ width: imgDims.width, height: imgDims.height }}
+          alt="To crop"
+          className="object-contain w-full h-full"
+          style={{ display: 'block' }}
         />
       </div>
-      <div className="flex gap-4 mt-2 justify-center">
+
+      {/* Buttons */}
+      <div className="flex gap-4">
         <button
           onClick={handleCrop}
-          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 font-medium"
+          className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
         >
           Crop Image
         </button>
         <button
           onClick={handleReset}
-          className="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 font-medium"
+          className="bg-gray-300 text-gray-700 px-6 py-2 rounded hover:bg-gray-400"
         >
           Reset
         </button>
       </div>
+
+      {/* Cropped Preview */}
+      {croppedImage && (
+        <CroppedResult image={croppedImage} width={croppedDims.width} height={croppedDims.height} />
+      )}
     </div>
   );
 };

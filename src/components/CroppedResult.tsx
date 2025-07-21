@@ -1,26 +1,27 @@
 import React from 'react';
+import AddToTwitterButton from './AddToTwitterButton';
 
-interface CroppedResultProps {
+interface Props {
   image: string;
-  onReset: () => void;
+  width: number;
+  height: number;
 }
 
-const CroppedResult: React.FC<CroppedResultProps> = ({ image, onReset }) => {
+const CroppedResult: React.FC<Props> = ({ image, width, height }) => {
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="max-w-[550px] max-h-[550px] overflow-hidden rounded shadow">
+    <div className="flex flex-col items-center gap-2">
+      <span className="text-base text-gray-500 font-medium">Cropped Result</span>
+      <div
+        className="overflow-hidden rounded shadow border bg-white flex items-center justify-center"
+        style={{ width, height }}
+      >
         <img
           src={image}
-          alt="Cropped result"
-          className="w-full h-auto"
+          alt="Cropped"
+          className="object-contain w-full h-full"
         />
       </div>
-      <button
-        onClick={onReset}
-        className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-      >
-        Start Over
-      </button>
+      <AddToTwitterButton image={image} />
     </div>
   );
 };
