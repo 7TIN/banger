@@ -1,3 +1,4 @@
+/// <reference types="chrome" />
 
 import React, { useState, useEffect } from 'react';
 import ImageUploader from './components/ImageUploader';
@@ -6,25 +7,22 @@ import AddToTwitterButton from './components/AddToTwitterButton';
 
 const MAX_WIDTH = 550;
 const MAX_HEIGHT = 550;
-const MIN_WIDTH = 300;
-const MIN_HEIGHT = 300;
+const MIN_WIDTH = 150;
+const MIN_HEIGHT = 150;
 
 const App = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const [croppedDims, setCroppedDims] = useState<{width: number, height: number}>({width: MAX_WIDTH, height: MAX_HEIGHT});
+  const [croppedDims, setCroppedDims] = useState({ width: MAX_WIDTH, height: MAX_HEIGHT });
 
-  // When the cropped image changes, calculate its scaled dimensions
   useEffect(() => {
     if (croppedImage) {
-      const img = new window.Image();
+      const img = new Image();
       img.onload = () => {
-        let width = img.naturalWidth;
-        let height = img.naturalHeight;
-        const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1);
+        const scale = Math.min(MAX_WIDTH / img.naturalWidth, MAX_HEIGHT / img.naturalHeight, 1);
         setCroppedDims({
-          width: Math.max(Math.round(width * scale), MIN_WIDTH),
-          height: Math.max(Math.round(height * scale), MIN_HEIGHT),
+          width: Math.max(Math.round(img.naturalWidth * scale), MIN_WIDTH),
+          height: Math.max(Math.round(img.naturalHeight * scale), MIN_HEIGHT),
         });
       };
       img.src = croppedImage;
@@ -32,33 +30,46 @@ const App = () => {
   }, [croppedImage]);
 
   const handleReset = () => {
-    setSelectedImage(null);
     setCroppedImage(null);
+    setSelectedImage(null);
+    setCroppedDims({ width: MAX_WIDTH, height: MAX_HEIGHT });
   };
 
   return (
-    <div className="w-[600px] h-[800px] flex flex-col bg-white text-gray-800 shadow-lg rounded overflow-hidden mx-auto my-0">
-      <p className="text-2xl font-bold px-6 pt-6">Banger</p>
+    <div className="w-[600px] h-[800px] bg-white text-gray-900 overflow-hidden flex flex-col rounded shadow-2xl">
+      <p className="text-2xl font-bold px-6 pt-4 text-center">Banger</p>
+      <main className="flex-1 overflow-y-auto px-6 pb-4 space-y-6 flex flex-col items-center">
+        <ImageUploader onImageSelect={setSelectedImage} />
 
-      <main className="flex-1 overflow-y-auto p-6 flex flex-col items-center justify-start gap-6">
-        {/* Image input section */}
-        {!selectedImage && (
-          <ImageUploader onImageSelect={setSelectedImage} />
-        )}
-
-        {/* Cropper + Cropped Result Section */}
         {selectedImage && (
           <ImageCropper
             image={selectedImage}
             onCropComplete={setCroppedImage}
-            croppedImage={croppedImage}
-            onReset={handleReset}
             maxWidth={MAX_WIDTH}
             maxHeight={MAX_HEIGHT}
             minWidth={MIN_WIDTH}
             minHeight={MIN_HEIGHT}
-            croppedDims={croppedDims}
           />
+        )}
+
+        {croppedImage && (
+          <div className="flex flex-col items-center">
+            <h2 className="text-lg font-medium text-gray-700 mb-2">Cropped Result</h2>
+            <div
+              style={{
+                width: croppedDims.width,
+                height: croppedDims.height,
+              }}
+              className="rounded shadow overflow-hidden"
+            >
+              <img
+                src={croppedImage}
+                alt="Cropped"
+                className="object-contain w-full h-full"
+              />
+            </div>
+            <AddToTwitterButton image={croppedImage} />
+          </div>
         )}
       </main>
     </div>
