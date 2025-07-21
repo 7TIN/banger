@@ -4,35 +4,34 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:main": "vite build",
+    "dev": "vite",
+    "build": "tsc && vite build && bun run build:content && bun run build:background && bun run postbuild",
     "build:content": "vite build --config vite.config.content.js",
     "build:background": "vite build --config vite.config.background.js",
-    "build": "tsc -b && npm run build:main && npm run build:content && npm run build:background && npm run postbuild",
     "postbuild": "cp manifest.json dist/manifest.json && cp public/vite.svg dist/vite.svg",
-    "dev": "vite",
-    "lint": "eslint .",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
-    "@types/chrome": "^0.1.1",
-    "cropperjs": "2.0.0-alpha.2",
-    "react": "^19.1.0",
-    "react-cropper": "2.1.7",
-    "react-dom": "^19.1.0",
-    "tailwindcss": "^4.1.11"
+    "cropperjs": "^1.6.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.30.1",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.6.0",
-    "eslint": "^9.30.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.35.1",
-    "vite": "^7.0.4"
+    "@types/chrome": "^0.0.254",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
   }
 }

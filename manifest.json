@@ -3,28 +3,24 @@
   "manifest_version": 3,
   "name": "Banger",
   "version": "1.0",
-  "description": "Edit images, videos, and audio before posting to Twitter.",
-  "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["https://x.com/*"],
+  "description": "Crop and edit images before posting to Twitter",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
   "action": {
-    "default_icon": "vite.svg"
-  },
-  "background": {
-    "service_worker": "background.js"
+    "default_popup": "index.html"
   },
   "content_scripts": [
     {
-      "matches": ["https://x.com/*"],
+      "matches": ["https://twitter.com/*"],
       "js": ["content.js"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["banger-sidebar.css"],
-      "matches": ["<all_urls>"]
+      "resources": ["index.html"],
+      "matches": ["https://twitter.com/*"]
     }
-  ],
-  "chrome_url_overrides": {
-    "newtab": "index.html"
-  }
+  ]
 }

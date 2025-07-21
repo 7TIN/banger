@@ -1,19 +1,35 @@
 @import "tailwindcss";
 
-body {
-  /* Remove border-radius and overflow to avoid interfering with the page */
+/* Popup specific styles */
+html, body, #root {
+  width: 600px;
+  height: 800px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-.banger-sidebar {
-  color: #222;
-  background: #fff;
-  font-family: inherit;
+/* Custom scrollbar */
+/* .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 #f7fafc;
+} */
+
+/* .overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
 }
 
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f7fafc;
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: #cbd5e0;
+  border-radius: 3px;
+} */
+
+/* Ensure cropper works in popup */
+/* .cropper-container {
+  max-width: 100%;
+  max-height: 450px;
+} */

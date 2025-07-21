@@ -1,18 +1,28 @@
-type Props = {
-  croppedImage: string;
-};
+import React from 'react';
 
-export default function CroppedResult({ croppedImage }: Props) {
+interface CroppedResultProps {
+  image: string;
+  onReset: () => void;
+}
+
+const CroppedResult: React.FC<CroppedResultProps> = ({ image, onReset }) => {
   return (
-    <div className=" max-w-[550px] max-h-[550px] w-auto h-auto flex justify-center mt-4">
-      <div className="flex flex-col items-center gap-2">
-        <p className="text-sm text-gray-600">Cropped Result</p>
+    <div className="flex flex-col items-center gap-4">
+      <div className="max-w-[550px] max-h-[550px] overflow-hidden rounded shadow">
         <img
-          src={croppedImage}
-          alt="Cropped"
-          className="object-contain rounded shadow"
+          src={image}
+          alt="Cropped result"
+          className="w-full h-auto"
         />
       </div>
+      <button
+        onClick={onReset}
+        className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
+      >
+        Start Over
+      </button>
     </div>
   );
-}
+};
+
+export default CroppedResult;

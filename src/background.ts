@@ -1,11 +1,11 @@
-chrome.action.onClicked.addListener((tab) => {
-  if (tab.id) {
-    console.log("BACKGROUND: Sending TOGGLE_SIDEBAR message to tab " + tab.id); // <-- ADD THIS
-    chrome.tabs.sendMessage(tab.id, {
-      type: "TOGGLE_SIDEBAR",
-    },
-    // This callback is a good practice to prevent the "Receiving end does not exist" error on pages where the script can't be injected.
-    () => chrome.runtime.lastError
-    );
-  }
+chrome.action.onClicked.addListener(() => {
+  chrome.windows.create({
+    url: chrome.runtime.getURL("index.html"),
+    type: "popup",
+    width: 400,
+    height: 800,
+    left: 1000,
+    top: 0,
+    focused: true
+  });
 });

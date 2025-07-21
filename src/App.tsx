@@ -1,77 +1,77 @@
 /// <reference types="chrome" />
 
-import { useRef, useState } from "react";
-import ImageUploader from "./components/ImageUploader";
-import ImageCropper from "./components/ImageCropper";
-import CroppedResult from "./components/CroppedResult";
-import Cropper from "cropperjs";
-import AddToTwitterButton from "./components/AddToTwitterButton";
+import React, { useState } from 'react';
+import ImageUploader from './components/ImageUploader';
+import ImageCropper from './components/ImageCropper';
+import AddToTwitterButton from './components/AddToTwitterButton';
 
-export default function App() {
-  const [image, setImage] = useState<string>("");
+const MAX_WIDTH = 550;
+const MAX_HEIGHT = 550;
+
+const App: React.FC = () => {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
-  const cropperRef = useRef<Cropper | null>(null);
+  const [croppedDims, setCroppedDims] = useState<{width: number, height: number}>({width: MAX_WIDTH, height: MAX_HEIGHT});
+
+  // When croppedImage changes, get its size for dynamic container
+  React.useEffect(() => {
+    if (croppedImage) {
+      const img = new window.Image();
+      img.onload = () => {
+        let width = img.naturalWidth;
+        let height = img.naturalHeight;
+        const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height, 1);
+        setCroppedDims({
+          width: Math.round(width * scale),
+          height: Math.round(height * scale)
+        });
+      };
+      img.src = croppedImage;
+    }
+  }, [croppedImage]);
 
   return (
-    <div
-      id="banger-sidebar"
-      style={{
-        position: "fixed",
-        top: 0,
-        right: 0,
-        height: "100vh",
-        width:  "400px",
-        zIndex: 2147483647,
-        boxShadow: "-2px 0 16px rgba(0,0,0,0.15)",
-        borderRadius: "12px 0 0 12px",
-        background: "#fff",
-        display: "flex",
-        flexDirection: "column",
-        color: "#222",
-        fontFamily: "inherit",
-      }}
-      className="banger-sidebar"
-    >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-2 p-2">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="Logo" className="h-6 w-6" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-          <h2 className="text-base font-semibold text-gray-800">Crop to Tweet</h2>
-        </div>
-        <button
-          className="text-gray-500 hover:text-red-500 text-2xl font-bold px-2"
-          style={{ background: "none", border: "none", cursor: "pointer" }}
-          onClick={() => {
-            // Only remove the sidebar overlay, not the React root
-            const sidebar = document.getElementById('banger-root');
-            if (sidebar) sidebar.remove();
-          }}
-        >
-          ×
-        </button>
-      </div>
+    <div className="w-[600px] h-[800px] flex flex-col bg-white text-gray-800 shadow-lg rounded overflow-hidden mx-auto my-0">
 
-      <div className="flex-grow overflow-y-auto space-y-4 px-1 scrollbar-hide">
-        <ImageUploader onImageChange={(img) => {
-          setImage(img);
-          setCroppedImage("");
-        }} />
-
-        {image && (
-          <ImageCropper
-            image={image}
-            onCrop={setCroppedImage}
-            onInit={(cropper) => (cropperRef.current = cropper)}
-          />
+      <main className="flex-1 overflow-y-auto p-6 bg-white flex flex-col items-center justify-center scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+        {!selectedImage && (
+          <ImageUploader onImageSelect={setSelectedImage} />
         )}
 
-        {croppedImage && <CroppedResult croppedImage={croppedImage} />}
-      </div>
-
-      {/* Footer */}
-      <div className="mt-4 pt-3 flex justify-between items-center text-xs text-gray-500">
-        {croppedImage && <AddToTwitterButton croppedImage={croppedImage} />}
-      </div>
+        {selectedImage && (
+          <div className="flex flex-col items-center gap-8max-h-[550px] max-w-[550px] h-auto w-auto">
+            <ImageCropper
+              image={selectedImage}
+              onCropComplete={setCroppedImage}
+            />
+            {croppedImage && (
+              <div className="w-full flex flex-col items-center gap-3">
+                <span className="text-base text-gray-500 font-medium mb-1">Cropped Result</span>
+                <div
+                  className="overflow-hidden rounded shadow border bg-white flex items-center justify-center mx-auto"
+                  style={{
+                    maxWidth: MAX_WIDTH,
+                    maxHeight: MAX_HEIGHT,
+                    width: croppedDims.width,
+                    height: croppedDims.height,
+                    display: 'inline-block',
+                  }}
+                >
+                  <img
+                    src={croppedImage}
+                    alt="Cropped result"
+                    className="max-w-full max-h-full object-contain"
+                    style={{ width: croppedDims.width, height: croppedDims.height }}
+                  />
+                </div>
+                <AddToTwitterButton image={croppedImage} />
+              </div>
+            )}
+          </div>
+        )}
+      </main>
     </div>
   );
-}
+};
+
+export default App;
